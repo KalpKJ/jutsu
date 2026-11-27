@@ -1,0 +1,599 @@
+<title>Jutsu Effects Animation Guide</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Kaku+Gothic+New:wght@400;700&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: a long tutorial with a sticky contents rail on wide screens; one column on an iPad in portrait. Dark only, by request. */
+:root {
+  color-scheme: dark;
+  --bg: #0e121c;
+  --panel: #161c2a;
+  --panel-2: #1e2638;
+  --line: #2c3650;
+  --fg: #ece6db;
+  --fg-2: #b9b3a8;
+  --accent: #ff8a2b;
+  --accent-ink: #1a1206;
+  --chakra: #7fb6ff;
+  --wind: #6f7c99;
+  --hit: #ff8a2b;
+  --peak: #ffd24a;
+  --hold: #7fb6ff;
+  --fade: #8d6bd8;
+  --display: "Dela Gothic One", "Arial Black", sans-serif;
+  --body: "Zen Kaku Gothic New", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, monospace;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 17px; line-height: 1.7; }
+a { color: var(--chakra); text-underline-offset: 0.2em; }
+a:focus-visible, button:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+
+.wrap {
+  display: grid; grid-template-columns: 15rem minmax(0, 1fr); gap: 3rem;
+  max-width: 76rem; margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 2.5rem 5rem;
+}
+nav.toc { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 1.5rem); align-self: start; max-height: calc(100vh - 3rem); overflow-y: auto; font-size: 0.92rem; }
+.toc p { font-family: var(--display); font-size: 1.05rem; margin: 0 0 0.6rem; color: var(--accent); }
+.toc ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.15rem; }
+.toc a { display: block; padding: 0.3rem 0.6rem; border-radius: 6px; color: var(--fg-2); text-decoration: none; }
+.toc a:hover { background: var(--panel); color: var(--fg); }
+.toc .sub a { padding-left: 1.4rem; font-size: 0.86rem; }
+
+main { min-width: 0; }
+header.hero { padding-bottom: 2rem; border-bottom: 3px solid var(--line); margin-bottom: 2.5rem; }
+h1 { font-family: var(--display); font-weight: 400; font-size: clamp(2.2rem, 5vw, 3.4rem); line-height: 1.08; margin: 0 0 1rem; text-wrap: balance; color: var(--fg); }
+h1 span { color: var(--accent); }
+.lede { font-size: 1.15rem; color: var(--fg-2); max-width: 60ch; margin: 0; }
+h2 { font-family: var(--display); font-weight: 400; font-size: clamp(1.6rem, 3.4vw, 2.2rem); line-height: 1.15; margin: 3.5rem 0 1rem; text-wrap: balance; scroll-margin-top: 1.5rem; }
+h3 { font-family: var(--display); font-weight: 400; font-size: 1.3rem; margin: 2.2rem 0 0.6rem; color: var(--accent); scroll-margin-top: 1.5rem; }
+h4 { font-size: 1.02rem; margin: 1.6rem 0 0.4rem; }
+p, li { max-width: 68ch; }
+ul, ol { padding-left: 1.3rem; }
+li + li { margin-top: 0.35rem; }
+strong { color: #fff; }
+code, .mono { font-family: var(--mono); font-size: 0.9em; background: var(--panel-2); padding: 0.05em 0.35em; border-radius: 4px; }
+kbd { font-family: var(--body); font-weight: 700; font-size: 0.85em; background: var(--panel-2); border: 1px solid var(--line); border-bottom-width: 3px; padding: 0 0.4em; border-radius: 5px; white-space: nowrap; }
+
+.panel { background: var(--panel); border: 2px solid var(--line); border-radius: 10px; padding: 1.1rem 1.3rem; margin: 1.2rem 0; }
+.panel > :first-child { margin-top: 0; }
+.panel > :last-child { margin-bottom: 0; }
+.key { border-color: var(--accent); }
+.key h4 { color: var(--accent); margin-top: 0; }
+.path { font-weight: 700; color: var(--chakra); }
+
+.scroll-x { overflow-x: auto; margin: 1rem 0; }
+table { border-collapse: collapse; width: 100%; min-width: 34rem; font-size: 0.95rem; }
+th, td { text-align: left; vertical-align: top; padding: 0.55rem 0.7rem; border-bottom: 1px solid var(--line); }
+th { color: var(--fg-2); font-weight: 700; font-size: 0.85rem; }
+td:first-child { white-space: nowrap; }
+
+/* Colour swatches you can copy */
+.swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 12.5rem), 1fr)); gap: 0.7rem; margin: 1rem 0; }
+.swatch { display: grid; grid-template-columns: 3.2rem minmax(0, 1fr); gap: 0.2rem 0.8rem; align-items: center; background: var(--panel); border: 2px solid var(--line); border-radius: 10px; padding: 0.55rem; }
+.chip { grid-row: span 2; width: 3.2rem; height: 3.2rem; border-radius: 8px; border: 2px solid #00000055; }
+.swatch b { font-size: 0.95rem; line-height: 1.2; }
+.swatch button { justify-self: start; font-family: var(--mono); font-size: 0.85rem; color: var(--fg); background: var(--panel-2); border: 1px solid var(--line); border-radius: 5px; padding: 0.1rem 0.5rem; cursor: pointer; }
+.swatch button[data-copied] { color: var(--accent); }
+.swatch small { grid-column: 2; color: var(--fg-2); font-size: 0.8rem; line-height: 1.3; }
+
+/* Timing charts: one cell per frame at 24 fps, coloured by phase */
+.chart { margin: 1rem 0 0.4rem; }
+.frames { display: flex; flex-wrap: wrap; gap: 3px; }
+.frame { width: 1.55rem; height: 2.2rem; border-radius: 4px; display: grid; place-items: center; font-family: var(--mono); font-size: 0.7rem; color: var(--accent-ink); font-weight: 700; }
+.frame[data-held] { opacity: 0.55; }
+.frame[data-phase="wind"] { background: var(--wind); }
+.frame[data-phase="hit"] { background: var(--hit); }
+.frame[data-phase="peak"] { background: var(--peak); }
+.frame[data-phase="hold"] { background: var(--hold); }
+.frame[data-phase="fade"] { background: var(--fade); }
+.legend { display: flex; flex-wrap: wrap; gap: 0.4rem 1rem; font-size: 0.82rem; color: var(--fg-2); margin: 0.6rem 0 0; padding: 0; list-style: none; }
+.legend li { display: flex; align-items: center; gap: 0.4rem; margin: 0; }
+.legend i { width: 0.9rem; height: 0.9rem; border-radius: 3px; display: inline-block; }
+.chart-note { font-size: 0.85rem; color: var(--fg-2); margin: 0.3rem 0 0; }
+
+.steps { counter-reset: step; list-style: none; padding: 0; }
+.steps > li { counter-increment: step; position: relative; padding-left: 2.6rem; margin-top: 0.9rem; }
+.steps > li::before { content: counter(step); position: absolute; left: 0; top: 0.1rem; width: 1.8rem; height: 1.8rem; border-radius: 50%; background: var(--accent); color: var(--accent-ink); font-weight: 700; display: grid; place-items: center; font-size: 0.9rem; }
+
+.callout { border-left: 0; background: linear-gradient(90deg, #ff8a2b22, transparent 70%); border-radius: 8px; padding: 0.9rem 1.1rem; margin: 1.2rem 0; }
+.callout p { margin: 0; }
+
+.badge { display: inline-block; font-size: 0.78rem; font-weight: 700; padding: 0.05rem 0.55rem; border-radius: 999px; background: var(--panel-2); border: 1px solid var(--line); color: var(--fg-2); vertical-align: middle; }
+
+@media (max-width: 62rem) {
+  .wrap { grid-template-columns: minmax(0, 1fr); gap: 1.5rem; }
+  nav.toc { position: static; max-height: none; background: var(--panel); border: 2px solid var(--line); border-radius: 10px; padding: 1rem; }
+}
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+html { scroll-behavior: smooth; }
+</style>
+
+<div class="wrap">
+  <nav class="toc" aria-label="Contents">
+    <p>Contents</p>
+    <ol>
+      <li><a href="#start">Start here</a></li>
+      <li><a href="#timing">Why it felt too fast</a></li>
+      <li><a href="#setup">Procreate set-up</a></li>
+      <li><a href="#brushes">Brushes</a></li>
+      <li><a href="#rules">Rules of anime effects</a></li>
+      <li><a href="#workflow">How to draw any effect</a></li>
+      <li><a href="#drills">Three warm-up drills</a></li>
+      <li><a href="#smoke">Effect 1: Smoke poof</a></li>
+      <li><a href="#fire">Effect 2: Fireball</a></li>
+      <li><a href="#water">Effect 3: Water splash</a></li>
+      <li><a href="#sparks">Effect 4: Chidori sparks</a></li>
+      <li><a href="#trails">Bonus: sword trails</a></li>
+      <li><a href="#export">Export and hand-off</a></li>
+      <li><a href="#fixes">When it looks sloppy</a></li>
+      <li><a href="#words">Words to know</a></li>
+    </ol>
+  </nav>
+
+  <main>
+    <header class="hero">
+      <h1>Jutsu effects, <span>frame by frame</span></h1>
+      <p class="lede">A Procreate tutor for the smoke, fire, water and lightning in your jutsu app. Every number, colour, brush and frame is here, and it's written for someone new to animation.</p>
+    </header>
+
+    <section id="start">
+      <h2>Start here</h2>
+      <p>Work through this page in order the first time. The first half teaches the ideas that make anime effects feel smooth. The second half is a recipe for each effect, with a frame-by-frame chart.</p>
+      <div class="panel key">
+        <h4>A realistic plan</h4>
+        <ol>
+          <li><strong>Day 1:</strong> read up to "How to draw any effect", set up Procreate, and do Drill 1 (the bouncing ball). About 1 hour.</li>
+          <li><strong>Day 2:</strong> Drills 2 and 3: one smoke puff and a looping candle flame. About 2 hours.</li>
+          <li><strong>Days 3 to 5:</strong> Effect 1, the smoke poof. This is the one the app needs most, and it teaches everything the others use.</li>
+          <li><strong>Then:</strong> fireball, water splash, sparks, and the sword trails if you want them.</li>
+        </ol>
+      </div>
+      <p>Each effect is 10 to 12 drawings. Expect your first one to take an evening or two. The second takes half as long.</p>
+    </section>
+
+    <section id="timing">
+      <h2>Why it felt too fast</h2>
+      <p>When you raised the frame rate above 5 fps and it felt too fast, the speed setting wasn't the real problem. The motion needed more drawings between the big moments, and it needed to <strong>hold</strong> on the important ones. Here's how anime handles it.</p>
+
+      <h3>Anime runs at 24 fps but draws "on twos"</h3>
+      <p>TV anime plays at 24 frames per second, but most drawings stay on screen for <strong>2 frames</strong>. That's called animating "on twos": 12 new drawings per second. Calm moments are often "on threes" (8 drawings per second). Only the fastest hits are "on ones" (24 per second).</p>
+      <p>So set Procreate to <strong>24 fps</strong>, then use <strong>Hold duration</strong> to keep each drawing on screen for 2 or 3 frames. You get anime timing without drawing 24 pictures per second.</p>
+
+      <div class="panel">
+        <h4>The two settings that matter</h4>
+        <ul>
+          <li><strong>Frames per second: 24.</strong> Leave it there for every effect in this guide.</li>
+          <li><strong>Hold duration</strong> on each drawing: 1, 2 or 3 frames. The charts below tell you which, drawing by drawing.</li>
+        </ul>
+        <p>If you'd rather not use holds at first, set <strong>12 fps</strong> and give every drawing 1 frame. That's the same speed as "on twos". Add holds later, for the peaks.</p>
+      </div>
+
+      <h3>Timing and spacing</h3>
+      <p><strong>Timing</strong> is how many frames something takes. <strong>Spacing</strong> is how far it moves or grows between one drawing and the next. A sloppy, jumpy feel almost always comes from spacing, not timing:</p>
+      <ul>
+        <li><strong>Even spacing</strong> (the same change every drawing) looks robotic.</li>
+        <li><strong>Ease out</strong>: big changes first, then smaller and smaller. Explosions, puffs and splashes move this way: fast burst, slow settle.</li>
+        <li><strong>Ease in</strong>: small changes first, then bigger. A falling droplet does this, speeding up with gravity.</li>
+      </ul>
+      <p>Picture a smoke puff growing from 10% to 80% of the canvas over five drawings. With even spacing it reads 10, 24, 38, 52, 66, 80. With an ease out it reads 10, 45, 65, 74, 78, 80, which is how the anime does it.</p>
+
+      <h3>Anticipation, hit, hold, follow-through</h3>
+      <p>Every effect in this guide has the same four beats. The charts colour them:</p>
+      <ul class="legend" style="font-size:0.95rem">
+        <li><i style="background:var(--wind)"></i> Wind-up: a small, tight shape, sometimes squashed, held a moment</li>
+        <li><i style="background:var(--hit)"></i> Hit: the fast burst, on ones or twos</li>
+        <li><i style="background:var(--peak)"></i> Peak: the biggest drawing, slightly too big, held</li>
+        <li><i style="background:var(--hold)"></i> Hold: churning and rolling while it stays big</li>
+        <li><i style="background:var(--fade)"></i> Break-up: splitting into pieces, on threes</li>
+      </ul>
+      <p>Holding the peak is what makes an effect feel powerful instead of fast. The eye needs about 3 to 6 frames to read a big shape.</p>
+    </section>
+
+    <section id="setup">
+      <h2>Procreate set-up</h2>
+
+      <h3>New canvas</h3>
+      <ol class="steps">
+        <li>In the Gallery tap <span class="path">+</span>, then the <span class="path">new custom size</span> icon at the top right.</li>
+        <li><strong>Dimensions:</strong> width <code>1024</code>, height <code>1024</code>, units pixels. <strong>DPI:</strong> <code>132</code> (it makes no difference on screen; any value works).</li>
+        <li><strong>Colour Profile:</strong> RGB, <code>sRGB IEC61966-2.1</code>. Not Display P3: P3 colours shift when they reach a web browser.</li>
+        <li>Name it, for example <code>smoke-poof</code>, and tap <span class="path">Create</span>.</li>
+      </ol>
+      <p>Make the canvas once, then duplicate it from the Gallery for each new effect, so every file has the same settings.</p>
+
+      <h3>Turn on Animation Assist</h3>
+      <p><span class="path">Actions (spanner) → Canvas → Animation Assist</span>. A timeline appears at the bottom. Tap <span class="path">Settings</span> in it:</p>
+      <div class="scroll-x"><table>
+        <thead><tr><th>Setting</th><th>Value</th><th>Why</th></tr></thead>
+        <tbody>
+          <tr><td>Playback</td><td>Loop</td><td>So you see the effect over and over while you judge it.</td></tr>
+          <tr><td>Frames per second</td><td>24</td><td>Anime speed. Holds control how long each drawing stays.</td></tr>
+          <tr><td>Onion skin frames</td><td>2</td><td>Shows the 2 drawings before and after, faintly. More than that is clutter.</td></tr>
+          <tr><td>Onion skin opacity</td><td>35%</td><td>Enough to trace motion, not enough to confuse lines.</td></tr>
+          <tr><td>Blend primary frame</td><td>Off</td><td>Keeps the drawing you're working on solid.</td></tr>
+          <tr><td>Colour secondary frames</td><td>On</td><td>Tints previous frames red and next frames green, so you can tell them apart.</td></tr>
+        </tbody>
+      </table></div>
+      <p>To set a drawing's hold: tap its thumbnail in the timeline, then drag <span class="path">Hold duration</span>. A hold of 2 shows the drawing for 2 frames.</p>
+
+      <h3>Layers: one group per drawing</h3>
+      <p>In Animation Assist, every top-level layer or group is one frame. Use a <strong>group per drawing</strong>, named <code>01</code>, <code>02</code> and so on, with the same layers inside every time:</p>
+      <div class="panel">
+        <p class="mono" style="background:none;padding:0">01 (group)<br>&nbsp;&nbsp;lines<br>&nbsp;&nbsp;highlight &nbsp;(clipping mask)<br>&nbsp;&nbsp;shadow &nbsp;&nbsp;&nbsp;&nbsp;(clipping mask)<br>&nbsp;&nbsp;flat colour</p>
+      </div>
+      <ul>
+        <li>Make a group: select layers with a swipe right on each, then tap <span class="path">Group</span>.</li>
+        <li>Make a <strong>clipping mask</strong>: tap a layer's thumbnail, choose <span class="path">Clipping Mask</span>. It only paints where the layer below has colour, so shadows never spill outside the shape.</li>
+        <li>Do rough sketches in a separate group named <code>rough</code>, hidden or deleted before export.</li>
+      </ul>
+
+      <h3>Guides and helpers</h3>
+      <ul>
+        <li><strong>Find the centre:</strong> <span class="path">Actions → Canvas → Drawing Guide</span>, then <span class="path">Edit Drawing Guide → 2D Grid</span>, grid size 128 px. The centre is where your hands are in the app. Every effect starts from it.</li>
+        <li><strong>Reference:</strong> <span class="path">Actions → Canvas → Reference</span> opens a small floating window. Choose Image and load a paused screenshot from an episode to study the shapes and timing. Don't trace it.</li>
+        <li><strong>Flip to check:</strong> <span class="path">Actions → Canvas → Flip Canvas Horizontally</span>. Mistakes in shape and balance jump out when the image is mirrored.</li>
+        <li><strong>Gestures:</strong> two-finger tap to undo, three-finger tap to redo, four-finger tap to hide the interface, pinch quickly to fit the canvas on screen.</li>
+      </ul>
+
+      <h3>Make a palette per effect</h3>
+      <p>Open <span class="path">Colours → Palettes</span>, tap <span class="path">+</span>, <span class="path">Create new palette</span> and name it after the effect. Type each colour's hex code in the <span class="path">Value</span> tab (the <span class="path">Hex</span> field), then tap an empty square in your palette to save it. Every effect below lists its colours; tap a hex code on this page to copy it.</p>
+    </section>
+
+    <section id="brushes">
+      <h2>Brushes</h2>
+      <p>These are all in the <strong>classic library</strong>, so they look the same on every iPad. Once you're comfortable, try the new library's equivalents.</p>
+      <div class="scroll-x"><table>
+        <thead><tr><th>Job</th><th>Brush (category → name)</th><th>Size at 1024 px</th><th>Settings to change</th></tr></thead>
+        <tbody>
+          <tr><td>Rough sketch</td><td>Sketching → HB Pencil</td><td>3 to 5%</td><td>Sketch in a light blue on the rough layer.</td></tr>
+          <tr><td>Clean outlines</td><td>Inking → Studio Pen</td><td>6 to 12%</td><td>Brush Studio → Stroke Path → StreamLine 45%. Tapers with pressure, the classic anime line.</td></tr>
+          <tr><td>Even outlines</td><td>Inking → Technical Pen</td><td>5 to 8%</td><td>StreamLine 40%. Good for water edges and sword trails.</td></tr>
+          <tr><td>Lightning cores</td><td>Calligraphy → Monoline</td><td>3 to 6%</td><td>StreamLine 0, so the zigzags stay sharp.</td></tr>
+          <tr><td>Flat colour</td><td>ColorDrop (drag the colour circle into a shape)</td><td>none</td><td>Keep dragging, then hold and slide left or right to set the threshold to about 85%. Lines must be closed.</td></tr>
+          <tr><td>Cel shadows</td><td>Selection → Freehand, then fill; or Inking → Studio Pen</td><td>none</td><td>On the clipping-mask layer. Hard edges only.</td></tr>
+          <tr><td>Rough edges (Demon Slayer feel)</td><td>Inking → Dry Ink</td><td>4 to 8%</td><td>Use sparingly, on shadow edges only.</td></tr>
+          <tr><td>Glow</td><td>Airbrushing → Soft Brush</td><td>25 to 50%</td><td>On its own layer named <code>glow</code>, layer blend mode <strong>Add</strong>, opacity 40 to 60%.</td></tr>
+          <tr><td>Glowing lines</td><td>Luminance → Light Pen</td><td>2 to 4%</td><td>Lightning and spark highlights.</td></tr>
+        </tbody>
+      </table></div>
+      <div class="callout"><p><strong>StreamLine</strong> smooths your strokes after you draw them. Too low and lines wobble; too high and quick zigzags go soft. Change it in Brush Studio: tap the brush once, then Stroke Path.</p></div>
+    </section>
+
+    <section id="rules">
+      <h2>Rules of anime effects</h2>
+      <h3>Shapes</h3>
+      <ul>
+        <li><strong>Smoke</strong> is clusters of round billows, like stacked "C" curves. Big billows in front, small ones behind.</li>
+        <li><strong>Fire</strong> is teardrops and S-curves that taper to points, always reaching up or outward.</li>
+        <li><strong>Water</strong> is arcs and crowns: a lifted sheet with a rim of droplets, and curls at the tips.</li>
+        <li><strong>Lightning</strong> is zigzags with short branches. Straight segments, sharp corners, never wobbly.</li>
+      </ul>
+      <h3>Line weight</h3>
+      <p>Press harder on the outside contour and lighter on the inside lines. Taper the ends of every inner line. One weight everywhere looks like a colouring book.</p>
+      <h3>Colour: flat, shadow, highlight</h3>
+      <p>Cel shading uses <strong>three tones</strong>: the flat colour, one shadow and one highlight. All shadows sit on the same side. In this guide the light comes from the <strong>top left</strong>, so shadows go bottom right on every billow, flame and splash.</p>
+      <h3>Disappear by breaking apart</h3>
+      <p>Anime effects rarely fade with opacity. They break up: holes open in the middle, edges split into smaller pieces, and pieces shrink to nothing. That one habit makes your effects look like the show.</p>
+      <h3>Keep the volume</h3>
+      <p>Between two drawings, a shape can change but shouldn't randomly gain or lose size. Watch the onion skin: if the outline jumps in or out without reason, that's what reads as sloppy.</p>
+      <h3>Overlap the action</h3>
+      <p>Not every part moves at once. The big billow leads and the small ones follow a drawing later. Sparks fly out after the burst, not with it.</p>
+    </section>
+
+    <section id="workflow">
+      <h2>How to draw any effect</h2>
+      <p>Professional effects animators work in passes, never one finished drawing after another. Follow this order for every effect:</p>
+      <ol class="steps">
+        <li><strong>Keys.</strong> In the <code>rough</code> group, sketch only the wind-up, the peak and the last drawing. Three drawings, loose and fast, in light blue. Play them. Does the size and direction feel right?</li>
+        <li><strong>Breakdowns.</strong> Add the drawings halfway between the keys, still rough. Now you have about half the drawings.</li>
+        <li><strong>In-betweens.</strong> Fill the rest. Use the onion skin: each in-between sits between its neighbours, closer to whichever end the chart's spacing says.</li>
+        <li><strong>Play and fix the timing</strong> with holds. Change the rough first; it's cheap.</li>
+        <li><strong>Clean lines</strong> on the <code>lines</code> layer in each drawing's group, Studio Pen, one confident stroke per curve.</li>
+        <li><strong>Flat colour</strong> with ColorDrop on <code>flat colour</code>.</li>
+        <li><strong>Shadows and highlights</strong> on their clipping masks.</li>
+        <li><strong>Final play</strong> at 24 fps with holds, on a mirrored canvas too. Then export.</li>
+      </ol>
+      <div class="callout"><p>To start a new drawing from the last one, swipe left on its group and tap <strong>Duplicate</strong>, then change it. That keeps the volume steady during the hold phase.</p></div>
+    </section>
+
+    <section id="drills">
+      <h2>Three warm-up drills</h2>
+      <h3>Drill 1: the bouncing ball <span class="badge">about 1 hour</span></h3>
+      <p>The classic first exercise, and the fastest way to feel spacing. On a 1024 × 1024 canvas, draw a 120 px ball falling from the top and bouncing on a line near the bottom.</p>
+      <ul>
+        <li>Seven drawings down, at 24 fps with each held 2 frames.</li>
+        <li><strong>Spacing:</strong> close together at the top, further apart as it falls (gravity, ease in).</li>
+        <li><strong>On contact:</strong> squash it wide and flat for one drawing, then stretch it tall as it leaves.</li>
+        <li>Play it at 24 fps with holds of 2. Then try holds of 1 and 3 and feel the difference.</li>
+      </ul>
+      <h3>Drill 2: one smoke puff <span class="badge">about 1 hour</span></h3>
+      <p>One round billow appearing and dissolving, in 8 drawings: tiny (1), burst to half size (2), full size, slightly too big (3), settle (4), hold with a small wobble (5), a hole opens (6), splits into three pieces (7), pieces shrink away (8). Use the smoke palette below and holds of 2, 1, 2, 3, 2, 2, 3, 3.</p>
+      <h3>Drill 3: a candle flame loop <span class="badge">about 1 hour</span></h3>
+      <p>A single flame flickering in a loop: 6 drawings, each held 2 frames. The tip sways left, centre, right, centre, splits once, rejoins. The last drawing must flow into the first. Colour it with the fire palette in bands: red outside, then orange, then yellow, then a white core.</p>
+    </section>
+
+    <section id="smoke">
+      <h2>Effect 1: Smoke poof</h2>
+      <p><strong>What it is:</strong> the "POOF" of smoke that every summoning and clone jutsu appears in. In the app it plays for Summoning Jutsu, Clone Jutsu, Substitution Jutsu and Fanged Pursuit.</p>
+      <p><strong>Study:</strong> pause any summoning in Naruto, for example Kakashi's ninja hounds or Naruto summoning a toad, and step through it. Notice how fast it bursts and how long the billows hang before breaking up.</p>
+      <div class="swatches" data-colours='[["Cloud White","#FFFFFF","flat colour"],["Mist","#DCE1E8","shadow"],["Storm Grey","#A9B2BF","deep shadow, inner folds"],["Ink Slate","#3A3F4A","outlines"]]'></div>
+      <div class="chart" data-frames='[[1,2,"wind"],[2,1,"hit"],[3,1,"hit"],[4,3,"peak"],[5,2,"hold"],[6,2,"hold"],[7,2,"fade"],[8,3,"fade"],[9,3,"fade"],[10,3,"fade"]]'></div>
+      <div class="scroll-x"><table>
+        <thead><tr><th>Drawing</th><th>Hold</th><th>What to draw</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>2</td><td>A tight ball of 3 billows at the centre, about 15% of the canvas. Slightly squashed.</td></tr>
+          <tr><td>2</td><td>1</td><td>Burst to 50%. Billows pushing outward, outline lumpy. Optional: 4 short straight speed lines radiating out.</td></tr>
+          <tr><td>3</td><td>1</td><td>80% of the canvas, rounder. This is the overshoot.</td></tr>
+          <tr><td>4</td><td>3</td><td>The peak: 75%, settled. 7 to 9 clear billows, big in front, small behind. Full shadows.</td></tr>
+          <tr><td>5</td><td>2</td><td>Same size; billows roll a little clockwise. Duplicate 4 and nudge each billow.</td></tr>
+          <tr><td>6</td><td>2</td><td>Holes open between billows near the middle. The outer billows start to separate.</td></tr>
+          <tr><td>7</td><td>2</td><td>Splits into 5 or 6 puffs drifting outward and slightly up.</td></tr>
+          <tr><td>8</td><td>3</td><td>Puffs at 70% of their size, further out.</td></tr>
+          <tr><td>9</td><td>3</td><td>Puffs at 40%. Two have vanished.</td></tr>
+          <tr><td>10</td><td>3</td><td>Two or three tiny puffs left.</td></tr>
+        </tbody>
+      </table></div>
+      <h4>Technique</h4>
+      <ul>
+        <li>Draw each billow as a "C" curve with Studio Pen, outer contour heavier. QuickShape helps: draw a circle and hold to snap it, then erase the parts hidden behind other billows.</li>
+        <li>Shadow (Mist) along the bottom-right inside each billow, as a crescent. Deep shadow (Storm Grey) only in the folds where billows meet.</li>
+        <li>No highlight colour needed: the white flat is the highlight.</li>
+        <li>Add 2 or 3 inner lines per billow, thin and tapered, to show its roundness.</li>
+      </ul>
+      <h4>Common mistakes</h4>
+      <ul>
+        <li>All billows the same size, which reads as bubble wrap. Vary them: three big, four medium, a few small.</li>
+        <li>Fading with opacity instead of breaking up.</li>
+        <li>The peak not held long enough. If it feels weak, add 1 frame to drawing 4.</li>
+      </ul>
+      <p><strong>Extras:</strong> three single puffs of different sizes on separate layers, not animated, for the app to scatter.</p>
+      <p><strong>File names:</strong> <code>smoke_01.png</code> to <code>smoke_10.png</code>, extras <code>puff_a.png</code>, <code>puff_b.png</code>, <code>puff_c.png</code>.</p>
+    </section>
+
+    <section id="fire">
+      <h2>Effect 2: Fireball</h2>
+      <p><strong>What it is:</strong> the Uchiha Fire Style: Fireball, a huge rolling ball of fire. In the app it plays for Fireball, Phoenix Flower, Dragon Flame and Dragon Flame Bomb.</p>
+      <p><strong>Study:</strong> Sasuke's or Itachi's fireballs. Notice the colour bands (dark red edge, orange, yellow, white core) and how the ball keeps churning while it holds.</p>
+      <div class="swatches" data-colours='[["White Heat","#FFF6D6","core"],["Sun Yellow","#FFD24A","inner band"],["Naruto Orange","#FF8A1F","flat colour, main band"],["Ember","#E8441A","outer band"],["Deep Ember","#9E1E0B","shadow, tongue tips"],["Ash","#3B2A2A","smoke wisps at the end"]]'></div>
+      <div class="chart" data-frames='[[1,2,"wind"],[2,1,"wind"],[3,1,"hit"],[4,1,"hit"],[5,3,"peak"],[6,2,"hold"],[7,2,"hold"],[8,2,"hold"],[9,2,"fade"],[10,3,"fade"],[11,3,"fade"],[12,3,"fade"]]'></div>
+      <div class="scroll-x"><table>
+        <thead><tr><th>Drawing</th><th>Hold</th><th>What to draw</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>2</td><td>A small bright ball at the centre, 10%: white core, yellow edge.</td></tr>
+          <tr><td>2</td><td>1</td><td>Squashed slightly wider: the wind-up.</td></tr>
+          <tr><td>3</td><td>1</td><td>35%. Bands appear: yellow inside, orange outside. Five short tongues start.</td></tr>
+          <tr><td>4</td><td>1</td><td>60%. Tongues longer, curling outward.</td></tr>
+          <tr><td>5</td><td>3</td><td>The peak: 85%. All bands visible: red edge, orange, yellow, white core. Eight to ten tongues around the rim, longest at the top.</td></tr>
+          <tr><td>6</td><td>2</td><td>Churning: the inner bands shift a quarter turn, tongues change places. Same size.</td></tr>
+          <tr><td>7</td><td>2</td><td>Churn again. The top starts to rise.</td></tr>
+          <tr><td>8</td><td>2</td><td>Churn; the whole ball drifts up about 5%.</td></tr>
+          <tr><td>9</td><td>2</td><td>Breaks into four or five big tongues rising separately.</td></tr>
+          <tr><td>10</td><td>3</td><td>Tongues thinner and further apart. Embers (tiny orange dots) fly out.</td></tr>
+          <tr><td>11</td><td>3</td><td>Small tongues and embers, plus two wisps of Ash smoke.</td></tr>
+          <tr><td>12</td><td>3</td><td>A few small tongues, embers and smoke wisps.</td></tr>
+        </tbody>
+      </table></div>
+      <h4>Technique</h4>
+      <ul>
+        <li>Fire usually has <strong>no outline</strong>. Its shape comes from the colour bands. Draw each band as a closed shape and fill it with ColorDrop, outside in: Ember, then Naruto Orange, then Sun Yellow, then White Heat.</li>
+        <li>Shadow: Deep Ember on the bottom-right edge, and at the tips of the longest tongues.</li>
+        <li>Glow (optional): a Soft Brush pass of Sun Yellow on a <code>glow</code> layer set to Add, at 40%.</li>
+        <li>Tongues are S-curves that taper to a sharp point. Draw each in one stroke.</li>
+      </ul>
+      <h4>Common mistakes</h4>
+      <ul>
+        <li>Bands as neat circles. Make them wavy and uneven, thicker at the top.</li>
+        <li>Too much white: keep the core small, or the fireball looks like a lightbulb.</li>
+        <li>Fire falling down. Fire always rises: every piece drifts up as it breaks apart.</li>
+      </ul>
+      <p><strong>Extras:</strong> five single flame tongues, <code>flame_a.png</code> to <code>flame_e.png</code>.</p>
+      <p><strong>File names:</strong> <code>fire_01.png</code> to <code>fire_12.png</code>.</p>
+    </section>
+
+    <section id="water">
+      <h2>Effect 3: Water splash</h2>
+      <p><strong>What it is:</strong> a crown of water bursting up from below the hands. In the app it plays for Water Trumpet and Water Shark Bomb.</p>
+      <p><strong>Study:</strong> any water jutsu in Naruto, and the water in Demon Slayer, which takes its style from Hokusai's woodblock waves: thick dark outlines, white curling foam, and claw-shaped crest tips.</p>
+      <div class="swatches" data-colours='[["Foam","#F2FCFF","highlights, foam rim"],["Shallow","#7FD6F7","light areas"],["Leaf Pool Blue","#2E9BDF","flat colour"],["Deep","#135FA8","shadow"],["Abyss","#0E3F73","outlines"]]'></div>
+      <div class="chart" data-frames='[[1,2,"wind"],[2,1,"hit"],[3,1,"hit"],[4,3,"peak"],[5,2,"hold"],[6,2,"fade"],[7,2,"fade"],[8,3,"fade"],[9,3,"fade"],[10,3,"fade"]]'></div>
+      <div class="scroll-x"><table>
+        <thead><tr><th>Drawing</th><th>Hold</th><th>What to draw</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>2</td><td>A bulge of water just below the centre, 20% wide.</td></tr>
+          <tr><td>2</td><td>1</td><td>A column shoots up to 40%.</td></tr>
+          <tr><td>3</td><td>1</td><td>The column opens into a crown, 70%. The first droplets leave the rim.</td></tr>
+          <tr><td>4</td><td>3</td><td>The peak: a full crown, 80%, with 6 to 8 claw-shaped tips and droplets flung outward in arcs.</td></tr>
+          <tr><td>5</td><td>2</td><td>The crown tips curl over. Droplets fly further out, still rising slightly.</td></tr>
+          <tr><td>6</td><td>2</td><td>The crown starts to fall. Droplets turn downward. Their spacing gets wider each drawing (gravity).</td></tr>
+          <tr><td>7</td><td>2</td><td>The crown collapses into a ring of water.</td></tr>
+          <tr><td>8</td><td>3</td><td>A ring of foam and splashing drops.</td></tr>
+          <tr><td>9</td><td>3</td><td>Foam pieces and a few drops.</td></tr>
+          <tr><td>10</td><td>3</td><td>The last drops.</td></tr>
+        </tbody>
+      </table></div>
+      <h4>Technique</h4>
+      <ul>
+        <li>Outline with Technical Pen in Abyss, 6 to 8%. Water lines are smooth and even.</li>
+        <li>Flat colour Leaf Pool Blue. Shadow Deep on the bottom-right side of every shape.</li>
+        <li>One curved white Foam stripe on each big shape, following its curve. That one stripe makes it read as water.</li>
+        <li>Droplets are teardrops pointing back along their path.</li>
+        <li>For the Demon Slayer look, add white swirls and dots of foam along the crest, and make each tip a small curl.</li>
+      </ul>
+      <h4>Common mistakes</h4>
+      <ul>
+        <li>Droplets falling at an even speed. Space them wider as they fall.</li>
+        <li>Too many tiny droplets. Fewer, bigger drops read better.</li>
+      </ul>
+      <p><strong>Extras:</strong> four single droplets, <code>drop_a.png</code> to <code>drop_d.png</code>.</p>
+      <p><strong>File names:</strong> <code>water_01.png</code> to <code>water_10.png</code>.</p>
+    </section>
+
+    <section id="sparks">
+      <h2>Effect 4: Chidori sparks <span class="badge">optional</span></h2>
+      <p><strong>What it is:</strong> the crackling electric arcs around Chidori. The app already draws good lightning in code, so this only adds a hand-drawn layer on top.</p>
+      <p><strong>The big difference:</strong> lightning is <strong>not in-betweened</strong>. Every drawing is a completely new arrangement. Smoothness would make it look slow and fake.</p>
+      <div class="swatches" data-colours='[["Core White","#FFFFFF","bolt centre"],["Chakra Light","#CFE6FF","bolt edge"],["Chidori Blue","#6FA8FF","glow, outer bolts"],["Edge Violet","#4B5BD6","outline on darker backgrounds"]]'></div>
+      <div class="chart" data-frames='[[1,1,"hit"],[2,1,"hit"],[3,2,"peak"],[4,1,"hit"],[5,1,"hit"],[6,2,"peak"]]'></div>
+      <p class="chart-note">A loop of about 8 frames, a third of a second, that the app repeats.</p>
+      <ul>
+        <li><strong>Canvas:</strong> 512 × 512 px, same colour profile.</li>
+        <li>Each drawing: 5 to 8 bolts from the centre outward, each a zigzag of 4 to 6 straight segments with 1 or 2 short branches. Monoline, 4%, Core White.</li>
+        <li>Duplicate the bolts layer, move it under, set it to Chakra Light, and make it a little thicker as the edge.</li>
+        <li>Glow: Soft Brush, Chidori Blue, on a layer set to Add, 50%.</li>
+        <li>Drawings 3 and 6 are the brightest, with more bolts.</li>
+      </ul>
+      <p><strong>File names:</strong> <code>spark_01.png</code> to <code>spark_06.png</code>.</p>
+    </section>
+
+    <section id="trails">
+      <h2>Bonus: sword trails, Demon Slayer style <span class="badge">optional</span></h2>
+      <p>Ufotable's Demon Slayer draws breathing techniques as ribbons that follow the sword. Water Breathing looks like an ukiyo-e wave; Flame Breathing is a ribbon of fire. These would suit a future slash effect in the app, or a cast that sweeps across the panel. Make them only after the four effects above.</p>
+
+      <h3>Water Breathing ribbon</h3>
+      <div class="swatches" data-colours='[["Foam","#F4FBFF","foam, inner flow lines"],["Wave","#8FD3F4","light side"],["Hokusai Blue","#2F7FC1","flat colour"],["Prussian","#123E73","shadow"],["Night Ink","#0B2447","outlines"]]'></div>
+      <div class="chart" data-frames='[[1,1,"wind"],[2,1,"hit"],[3,1,"hit"],[4,1,"hit"],[5,3,"peak"],[6,2,"hold"],[7,2,"hold"],[8,2,"fade"],[9,2,"fade"],[10,3,"fade"],[11,3,"fade"],[12,3,"fade"]]'></div>
+      <ul>
+        <li><strong>Canvas:</strong> 2048 × 1024 px (wide), same colour profile.</li>
+        <li><strong>Path:</strong> the ribbon sweeps in an arc from the left edge to the right, like a sword slash, wide in the middle and thin at both ends.</li>
+        <li><strong>Drawings 1 to 4:</strong> the ribbon's leading tip races along the arc. Each drawing it covers about a quarter more of the path. Fast, on ones.</li>
+        <li><strong>Drawing 5, held:</strong> the full ribbon. Along its top edge, a scalloped crest of claw-shaped foam tips. At both ends, a tight spiral curl.</li>
+        <li><strong>Drawings 6 and 7:</strong> the water keeps flowing: shift the inner white flow lines along the ribbon each drawing, and keep the outline still.</li>
+        <li><strong>Drawings 8 to 12:</strong> the ribbon breaks from its tail end into curling pieces and foam dots.</li>
+        <li><strong>Lines:</strong> Technical Pen in Night Ink, thick (8%) outside and thin (3%) for the inner flow lines in Foam.</li>
+      </ul>
+
+      <h3>Flame Breathing ribbon</h3>
+      <div class="swatches" data-colours='[["Flash","#FFF4C2","core line"],["Gold","#FFC233","inner flame"],["Blaze","#FF7A1A","flat colour"],["Crimson","#E0351B","outer flame"],["Char","#7A160B","shadow, tips"]]'></div>
+      <ul>
+        <li>Same canvas, path and timing chart as the water ribbon.</li>
+        <li>The ribbon is a sweep of fire: along its outer edge, flame tongues lick backward, away from the direction of the slash.</li>
+        <li>No outline. Bands from the outside in: Crimson, Blaze, Gold, then a thin Flash line through the centre.</li>
+        <li>On the hold drawings, the tongues flicker: redraw them each time while the ribbon's body stays put.</li>
+        <li>The break-up leaves rising tongues and embers, like the fireball.</li>
+      </ul>
+      <p><strong>File names:</strong> <code>trail-water_01.png</code> onward, <code>trail-flame_01.png</code> onward.</p>
+    </section>
+
+    <section id="export">
+      <h2>Export and hand-off</h2>
+      <ol class="steps">
+        <li>Delete or hide the <code>rough</code> group. Hide the Background layer, so the export is transparent.</li>
+        <li>Check the drawing order in the timeline, and play it once more at 24 fps with your holds.</li>
+        <li><strong>Animated version:</strong> <span class="path">Actions → Share → Animated PNG</span>, choose <strong>Max resolution</strong> and keep 24 fps. This keeps your hold timings, so the app plays it exactly as you timed it.</li>
+        <li><strong>Separate frames:</strong> <span class="path">Actions → Share → PNG Files</span>. This exports every group as its own PNG, numbered in order. Rename them as each effect lists (<code>smoke_01.png</code> and so on).</li>
+        <li>Export extras (single puffs, flames, droplets) from their own canvas the same way.</li>
+        <li>Put everything in <strong>OneDrive → Desktop/Projects/jutsu-art/</strong>, a subfolder per effect, then tell me. I'll make sprite sheets and wire them into the app.</li>
+      </ol>
+      <div class="panel key">
+        <h4>Checklist before you send</h4>
+        <ul>
+          <li>1024 × 1024 px (512 for sparks, 2048 × 1024 for trails), sRGB.</li>
+          <li>Transparent background, nothing touching the edges.</li>
+          <li>The effect grows from the centre of the canvas in every drawing.</li>
+          <li>No text, no Japanese characters, nothing traced from the show.</li>
+          <li>Both the Animated PNG and the numbered PNG files.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="fixes">
+      <h2>When it looks sloppy</h2>
+      <div class="scroll-x"><table>
+        <thead><tr><th>What you see</th><th>Why</th><th>Fix</th></tr></thead>
+        <tbody>
+          <tr><td>It flashes by too fast</td><td>The peak isn't held</td><td>Hold the peak drawing 3 to 4 frames. Hold break-up drawings 3 frames.</td></tr>
+          <tr><td>It jitters or boils</td><td>Outlines change randomly between drawings</td><td>Duplicate the previous drawing and change only what moves. Keep still parts still.</td></tr>
+          <tr><td>Movement feels robotic</td><td>Even spacing</td><td>Ease out: big change first, smaller after. Check with onion skin.</td></tr>
+          <tr><td>Lines look wobbly</td><td>Slow, hesitant strokes</td><td>Raise StreamLine to 50%, draw each curve in one fast stroke, zoom out while drawing.</td></tr>
+          <tr><td>It looks flat</td><td>No shadow, or shadows on different sides</td><td>One shadow tone, always on the bottom-right side.</td></tr>
+          <tr><td>It looks like clip art</td><td>Same line weight everywhere</td><td>Heavier outside contour, thin tapered inner lines.</td></tr>
+          <tr><td>It ends weakly</td><td>Fading out with opacity</td><td>Break it into pieces that shrink, over 3 drawings on threes.</td></tr>
+          <tr><td>Something feels off but you can't tell what</td><td>Your eye has got used to it</td><td>Flip the canvas horizontally, or come back the next day.</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="words">
+      <h2>Words to know</h2>
+      <div class="scroll-x"><table>
+        <thead><tr><th>Term</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td>Frame</td><td>One twenty-fourth of a second in anime.</td></tr>
+          <tr><td>Drawing</td><td>One picture you make. A drawing can last 1, 2 or 3 frames.</td></tr>
+          <tr><td>On ones, twos, threes</td><td>A new drawing every 1, 2 or 3 frames.</td></tr>
+          <tr><td>Hold duration</td><td>Procreate's setting for how many frames a drawing stays on screen.</td></tr>
+          <tr><td>Key</td><td>The most important drawings: start, peak, end.</td></tr>
+          <tr><td>Breakdown</td><td>The drawing halfway between two keys that decides how the motion travels.</td></tr>
+          <tr><td>In-between</td><td>The drawings that fill the gaps.</td></tr>
+          <tr><td>Timing</td><td>How many frames something takes.</td></tr>
+          <tr><td>Spacing</td><td>How much changes from one drawing to the next.</td></tr>
+          <tr><td>Ease in, ease out</td><td>Speeding up into a move, slowing down out of it.</td></tr>
+          <tr><td>Overshoot</td><td>Going slightly past the final size, then settling back.</td></tr>
+          <tr><td>Onion skin</td><td>Faint copies of neighbouring drawings, for comparison.</td></tr>
+          <tr><td>Cel shading</td><td>Flat colour with hard-edged shadow and highlight shapes.</td></tr>
+          <tr><td>Clipping mask</td><td>A layer that only paints inside the layer below it.</td></tr>
+          <tr><td>Alpha Lock</td><td>Swipe right with two fingers on a layer: you can only paint where it already has colour.</td></tr>
+        </tbody>
+      </table></div>
+      <p style="margin-top:2.5rem;color:var(--fg-2)">When you get stuck on a drawing, send me a screenshot or a screen recording of the playback and I'll tell you exactly what to change.</p>
+    </section>
+  </main>
+</div>
+
+<script>
+// Colour swatches with a tap-to-copy hex code.
+document.querySelectorAll('.swatches').forEach((box) => {
+  for (const [name, hex, use] of JSON.parse(box.dataset.colours)) {
+    const el = document.createElement('div')
+    el.className = 'swatch'
+    el.innerHTML = `<span class="chip" style="background:${hex}"></span><b>${name}</b><button type="button" aria-label="Copy ${name} ${hex}">${hex}</button><small>${use}</small>`
+    const button = el.querySelector('button')
+    button.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(hex)
+        button.textContent = 'Copied'
+        button.dataset.copied = ''
+      } catch {
+        const range = document.createRange()
+        range.selectNodeContents(button)
+        const sel = getSelection()
+        sel.removeAllRanges()
+        sel.addRange(range)
+      }
+      setTimeout(() => { button.textContent = hex; delete button.dataset.copied }, 1400)
+    })
+    box.append(el)
+  }
+})
+
+// Timing charts: one cell per frame at 24 fps; held frames of a drawing are dimmed.
+const PHASES = [['wind', 'Wind-up'], ['hit', 'Hit'], ['peak', 'Peak'], ['hold', 'Hold'], ['fade', 'Break-up']]
+document.querySelectorAll('.chart').forEach((chart) => {
+  const frames = JSON.parse(chart.dataset.frames)
+  const total = frames.reduce((sum, [, hold]) => sum + hold, 0)
+  const row = document.createElement('div')
+  row.className = 'frames'
+  row.setAttribute('role', 'img')
+  row.setAttribute('aria-label', `${frames.length} drawings over ${total} frames: ` + frames.map(([d, h]) => `drawing ${d} held ${h}`).join(', '))
+  for (const [drawing, hold, phase] of frames) {
+    for (let i = 0; i < hold; i++) {
+      const cell = document.createElement('span')
+      cell.className = 'frame'
+      cell.dataset.phase = phase
+      if (i > 0) cell.dataset.held = ''
+      cell.textContent = i === 0 ? drawing : ''
+      row.append(cell)
+    }
+  }
+  const note = document.createElement('p')
+  note.className = 'chart-note'
+  note.textContent = `${frames.length} drawings, ${total} frames at 24 fps: ${(total / 24).toFixed(2)} seconds. Each number is a new drawing; dimmed cells are its holds.`
+  const legend = document.createElement('ul')
+  legend.className = 'legend'
+  legend.innerHTML = PHASES.filter(([p]) => frames.some((f) => f[2] === p)).map(([p, label]) => `<li><i style="background:var(--${p})"></i>${label}</li>`).join('')
+  chart.append(row, note, legend)
+})
+</script>
