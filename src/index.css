@@ -1,0 +1,361 @@
+/* Hallmark · shape: app screen · genre: playful · theme: custom · redesign: full · idea: "your camera is a live manga panel set on Naruto's orange; colour arrives only with a jutsu" · vibe: "orange and ink, screentone, impact frames, colour on cast"
+ * paper: oklch(76% 0.16 56) ground, panels oklch(97.5% 0.005 280); dark: oklch(17% 0.025 262) · accent: oklch(72% 0.19 52) with ink text · display: Dela Gothic One · body: Zen Kaku Gothic New
+ * nav: top bar with the wordmark and four toggles · signature: the manga-drawn camera panel and its colour cast, with the jutsu list beside it · states: idle, loading, denied, unsupported, failed, live, practising, cast
+ * axes: mid/grotesk-heavy/warm · posture: drenched · contrast: pass · v2.0.0 */
+/* Hallmark · pre-emit critique: P4 H5 E5 S4 R4 V5 · weakest: S, the side panel is lists; set them as pressed manga panels with one clear selected state */
+/* Hallmark · waive 28b · the only video is the live camera feed in Stage.tsx · a live camera has no still frame to show before it starts */
+/* Hallmark · answered F4 · there is one filled primary, the start button; the rest are toggles and outlined buttons */
+@import url("@fontsource/dela-gothic-one/400.css");
+@import url("@fontsource/zen-kaku-gothic-new/400.css");
+@import url("@fontsource/zen-kaku-gothic-new/700.css");
+@import url("./tokens.css");
+@import url("./base.css");
+
+/* ── Light: panels of ink on Naruto's orange ─────────────────────────── */
+:root {
+  color-scheme: light;
+  --color-ground: oklch(76% 0.16 56);
+  --color-ground-tone: oklch(16% 0.004 280 / 0.14);
+  --color-panel-shadow: oklch(16% 0.004 280);
+  /* The manga drawing of the camera: black ink on white paper. */
+  --manga-paper: oklch(97.5% 0.005 280);
+  --manga-ink: oklch(16% 0.004 280);
+  --wordmark-fill: oklch(97.5% 0.005 280);
+
+  --color-fire: oklch(68% 0.2 45);
+  --color-water: oklch(66% 0.13 225);
+  --color-lightning: oklch(78% 0.1 245);
+  --color-earth: oklch(60% 0.08 70);
+  --color-summon: oklch(62% 0.12 300);
+  --color-clone: oklch(72% 0.02 280);
+  --color-seal: oklch(48% 0.19 20);
+
+  --panel-border: 3px;
+  --gutter-panel: 12px;
+  --radius-card: 2px;
+  --text-card: 4.2rem;
+  --side: 380px;
+  --bar: 76px;
+  --gutter: 24px;
+}
+
+/* ── Dark: his black-and-orange jacket, gentle at night ──────────────── */
+[data-theme='dark'] {
+  color-scheme: dark;
+  --color-ground: oklch(17% 0.025 262);
+  --color-ground-tone: oklch(76% 0.16 56 / 0.1);
+  --color-paper: oklch(23% 0.022 262);
+  --color-paper-2: oklch(28% 0.022 262);
+  --color-paper-3: oklch(34% 0.022 262);
+  --color-ink: oklch(93% 0.012 80);
+  --color-ink-2: oklch(82% 0.012 80);
+  --color-muted: oklch(70% 0.012 80);
+  --color-rule: oklch(8% 0.02 262);
+  --color-panel-shadow: oklch(8% 0.02 262);
+  --color-accent: oklch(74% 0.18 55);
+  --color-accent-ink: oklch(15% 0.025 262);
+  --color-focus: oklch(74% 0.18 55);
+  --color-success: oklch(76% 0.14 150);
+  /* Softer paper and navy ink, so the manga panel does not glare in the dark. */
+  --manga-paper: oklch(84% 0.012 80);
+  --manga-ink: oklch(15% 0.025 262);
+  --wordmark-fill: oklch(74% 0.18 55);
+}
+
+[data-element='fire'] { --element: var(--color-fire); }
+[data-element='water'] { --element: var(--color-water); }
+[data-element='lightning'] { --element: var(--color-lightning); }
+[data-element='earth'] { --element: var(--color-earth); }
+[data-element='summon'] { --element: var(--color-summon); }
+[data-element='clone'] { --element: var(--color-clone); }
+[data-element='seal'] { --element: var(--color-seal); }
+
+html, body { overflow-x: clip; }
+body {
+  line-height: 1.6;
+  background-color: var(--color-ground);
+  /* A screentone fading in from the top right, like a manga page's shading. */
+  background-image: radial-gradient(circle, var(--color-ground-tone) 1.6px, transparent 2px);
+  background-size: 11px 11px;
+  background-attachment: fixed;
+}
+body::before {
+  content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  background: linear-gradient(225deg, transparent 20%, var(--color-ground) 62%);
+}
+h1, h2, h3 { font-weight: 400; letter-spacing: 0; }
+a { color: var(--color-ink); text-decoration-color: var(--color-accent); text-decoration-thickness: 2px; }
+a:hover { text-decoration-thickness: 4px; }
+
+/* ── Buttons: ink outlines, a hard shadow that presses in ─────────────── */
+.primary, .quiet, .toggle {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--space-xs);
+  min-height: 44px; padding: 0 var(--space-md);
+  border: var(--panel-border) solid var(--color-rule); border-radius: var(--radius-card);
+  font-family: var(--font-body); font-weight: 700; font-size: var(--text-md);
+  cursor: pointer;
+  transition: transform var(--dur-micro) var(--ease-out), box-shadow var(--dur-micro) var(--ease-out), background-color var(--dur-micro) ease, color var(--dur-micro) ease;
+}
+.primary {
+  min-height: 52px; padding: 0 var(--space-xl);
+  background: var(--color-accent); color: var(--color-accent-ink);
+  font-family: var(--font-display); font-weight: 400; font-size: var(--text-lg);
+  box-shadow: 4px 4px 0 var(--color-panel-shadow);
+}
+.quiet, .toggle { background: var(--color-paper); color: var(--color-ink); box-shadow: 3px 3px 0 var(--color-panel-shadow); }
+.toggle[aria-pressed='true'] { background: var(--color-rule); color: var(--color-accent); }
+[data-theme='dark'] .toggle[aria-pressed='true'] { background: var(--color-accent); color: var(--color-accent-ink); }
+.primary:active:not(:disabled), .quiet:active, .toggle:active { transform: translate(3px, 3px); box-shadow: 0 0 0 var(--color-panel-shadow); }
+.primary:disabled { cursor: progress; background: var(--color-paper-3); color: var(--color-ink-2); }
+:focus-visible { outline: 3px solid var(--color-focus); outline-offset: 3px; }
+[data-theme='light'] :focus-visible, :root:not([data-theme]) :focus-visible { outline-color: var(--color-rule); }
+.link {
+  min-height: 44px; padding: 0; border: 0; background: none; color: var(--color-ink);
+  font: inherit; font-weight: 700; text-decoration: underline; text-decoration-color: var(--color-accent); text-decoration-thickness: 2px; text-underline-offset: 0.2em;
+  cursor: pointer;
+}
+@media (hover: hover) and (pointer: fine) {
+  .primary:hover:not(:disabled) { transform: translate(-1px, -1px); box-shadow: 6px 6px 0 var(--color-panel-shadow); }
+  .quiet:hover, .toggle:hover { background: var(--color-paper-2); }
+  .toggle[aria-pressed='true']:hover { background: var(--color-ink-2); color: var(--color-paper); }
+  .link:hover { text-decoration-thickness: 4px; }
+}
+
+/* ── Top bar ─────────────────────────────────────────────────────────── */
+.bar {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--space-md); flex-wrap: wrap;
+  max-width: 1600px; margin-inline: auto; padding: var(--space-sm) var(--gutter);
+}
+/* Manga title lettering: a filled word, a heavy ink outline, a hard drop. */
+.wordmark {
+  font-family: var(--font-display); font-size: 2.4rem; line-height: 1;
+  color: var(--wordmark-fill);
+  -webkit-text-stroke: 7px var(--color-rule); paint-order: stroke fill;
+  text-shadow: 5px 5px 0 var(--color-rule);
+  transform: rotate(-3deg);
+}
+.bar__controls { display: flex; gap: var(--space-xs); flex-wrap: wrap; }
+
+/* ── Workspace: the stage and the jutsu list side by side ────────────── */
+.workspace {
+  display: grid; grid-template-columns: minmax(0, 1fr) var(--side); gap: var(--space-lg); align-items: start;
+  max-width: 1600px; margin-inline: auto; padding: 0 var(--gutter) var(--space-lg);
+}
+.play { display: grid; gap: var(--space-sm); justify-items: center; min-width: 0; }
+
+.stage {
+  position: relative; overflow: hidden;
+  aspect-ratio: 4 / 3;
+  width: min(100%, calc((100dvh - var(--bar) - 150px) * 4 / 3));
+  min-width: min(100%, 320px);
+  border: 4px solid var(--color-rule);
+  background: var(--manga-paper);
+  box-shadow: 10px 10px 0 var(--color-panel-shadow);
+}
+.stage__video, .stage__feed, .stage__fx { position: absolute; inset: 0; width: 100%; height: 100%; }
+/* Visible by default; hidden only once WebGL is drawing it as ink. */
+.stage__video { object-fit: cover; transform: scaleX(-1); }
+.stage[data-gl] .stage__video { opacity: 0; }
+.stage__fx { pointer-events: none; z-index: var(--z-raised); }
+
+.cover {
+  position: absolute; inset: 0; z-index: var(--z-raised); isolation: isolate;
+  display: grid; align-content: center; justify-items: start; gap: var(--space-md);
+  padding: clamp(var(--space-lg), 6vw, var(--space-2xl));
+  color: var(--manga-ink);
+}
+/* Manga focus lines rushing in toward the call to start. */
+.cover::before {
+  content: ""; position: absolute; inset: -20%; z-index: -1;
+  background: repeating-conic-gradient(from 0deg at 30% 62%, var(--manga-ink) 0deg 0.7deg, transparent 0.7deg 5deg);
+  -webkit-mask-image: radial-gradient(ellipse 55% 50% at 30% 62%, transparent 45%, black 85%);
+  mask-image: radial-gradient(ellipse 55% 50% at 30% 62%, transparent 45%, black 85%);
+  opacity: 0.85;
+}
+.cover__line { font-family: var(--font-display); font-size: clamp(2rem, 4.6vw, 3.8rem); line-height: 1.05; max-width: 12ch; overflow-wrap: break-word; min-width: 0; }
+.cover__sub { max-width: 38ch; font-size: var(--text-lg); }
+.cover__note { font-size: var(--text-sm); }
+.cover .primary { box-shadow: 4px 4px 0 var(--manga-ink); border-color: var(--manga-ink); }
+
+/* Panels set into the stage: what you hold and the chain so far. */
+.hud {
+  position: absolute; z-index: var(--z-raised);
+  display: grid; gap: var(--space-3xs);
+  padding: var(--space-xs) var(--space-md);
+  background: var(--manga-paper); color: var(--manga-ink); border: var(--panel-border) solid var(--manga-ink);
+}
+.hud--held { top: var(--gutter-panel); left: var(--gutter-panel); min-width: 11rem; }
+.hud__label { font-size: var(--text-sm); }
+.hud__seal { font-family: var(--font-display); font-size: var(--text-xl); line-height: 1.1; }
+.hud--held:not([data-on]) .hud__seal { opacity: 0.55; }
+.charge { height: 6px; background: color-mix(in oklab, var(--manga-ink) 18%, transparent); overflow: hidden; }
+.charge > span { display: block; height: 100%; background: var(--color-accent); transform-origin: left; transition: transform var(--dur-micro) linear; }
+
+.chain {
+  position: absolute; z-index: var(--z-raised); left: var(--gutter-panel); right: var(--gutter-panel); bottom: var(--gutter-panel);
+  display: flex; flex-wrap: wrap; gap: var(--space-xs); margin: 0; padding: 0; list-style: none;
+}
+.chain__seal {
+  padding: var(--space-2xs) var(--space-sm);
+  background: var(--manga-paper); color: var(--manga-ink); border: var(--panel-border) solid var(--manga-ink);
+  font-family: var(--font-display); font-size: var(--text-md);
+  animation: stamp-in var(--dur-short) var(--ease-out);
+}
+.chain__seal:last-child { background: var(--manga-ink); color: var(--manga-paper); }
+@keyframes stamp-in { from { transform: scale(1.35); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+/* Manga sound effects, lettered beside the hands. */
+.lettering {
+  position: absolute; z-index: var(--z-modal);
+  font-family: var(--font-display); font-size: var(--text-xl); line-height: 1; white-space: nowrap;
+  color: var(--manga-ink);
+  -webkit-text-stroke: 6px var(--manga-paper); paint-order: stroke fill;
+  transform: translate(-50%, -50%) rotate(var(--tilt));
+  pointer-events: none;
+  animation: letter-pop 0.6s var(--ease-out) forwards;
+}
+.lettering[data-big] {
+  /* Long words shrink so they stay inside the panel. */
+  font-size: calc(var(--text-card) * min(1.1, 7.5 / var(--chars)));
+  color: var(--element);
+  -webkit-text-stroke: 10px var(--manga-ink);
+  animation-duration: 1.6s;
+}
+@keyframes letter-pop {
+  0% { opacity: 0; transform: translate(-50%, -50%) rotate(var(--tilt)) scale(1.8); }
+  14% { opacity: 1; transform: translate(-50%, -50%) rotate(var(--tilt)) scale(0.94); }
+  24%, 72% { opacity: 1; transform: translate(-50%, -50%) rotate(var(--tilt)) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -60%) rotate(var(--tilt)) scale(1.04); }
+}
+
+/* The technique's name, slammed across the top of the panel like an anime title card. */
+.title-card {
+  position: absolute; inset: 0; z-index: var(--z-modal);
+  display: grid; place-items: start center; padding-top: 6%; pointer-events: none;
+  animation: card-life 2.6s linear forwards;
+}
+.title-card__name {
+  display: block; width: 120%;
+  padding: var(--space-md) 10%;
+  background: var(--manga-ink); color: var(--manga-paper);
+  border-block: 6px solid var(--element);
+  font-family: var(--font-display); font-size: var(--text-card); line-height: 1.05; text-align: center;
+  overflow-wrap: break-word; min-width: 0;
+  transform: rotate(-4deg);
+  animation: card-slam 2.6s var(--ease-out) forwards;
+}
+@keyframes letter-fade { 0%, 70% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes card-life { 0%, 92% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes card-slam {
+  0% { transform: rotate(-4deg) translateX(-110%); }
+  12% { transform: rotate(-4deg) translateX(3%); }
+  18%, 80% { transform: rotate(-4deg) translateX(0); }
+  100% { transform: rotate(-4deg) translateX(110%); }
+}
+
+/* ── Under the stage: the seal track and what the camera sees ────────── */
+.track, .track__free, .guesses { width: min(100%, calc((100dvh - var(--bar) - 150px) * 4 / 3)); min-width: min(100%, 320px); }
+.track {
+  padding: var(--space-sm) var(--space-md);
+  background: var(--color-paper); border: var(--panel-border) solid var(--color-rule);
+  box-shadow: 6px 6px 0 var(--color-panel-shadow);
+}
+.track__title { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-sm); }
+.track__name { font-family: var(--font-display); font-size: var(--text-lg); }
+.track__seals { display: flex; flex-wrap: wrap; gap: var(--space-2xs); margin: var(--space-xs) 0 0; padding: 0; list-style: none; }
+.track__seals li { padding: 0 var(--space-sm); border: 2px solid var(--color-rule); font-weight: 700; line-height: 2; }
+.track__seals li[data-state='done'] { background: var(--color-rule); color: var(--color-paper); }
+[data-theme='dark'] .track__seals li[data-state='done'] { background: var(--color-paper-3); color: var(--color-ink-2); }
+.track__seals li[data-state='next'] { background: var(--color-accent); color: var(--color-accent-ink); font-family: var(--font-display); font-weight: 400; transform: scale(1.08); }
+.track__seals li[data-state='later'] { color: var(--color-ink-2); }
+.track__free { padding: var(--space-xs) var(--space-md); background: var(--color-paper); border: var(--panel-border) solid var(--color-rule); }
+.guesses { font-size: var(--text-sm); color: var(--color-ink); font-variant-numeric: tabular-nums; }
+
+/* ── The side panel: jutsu and seals, always in reach ────────────────── */
+.side {
+  position: sticky; top: var(--space-sm);
+  display: grid; grid-template-rows: auto minmax(0, 1fr);
+  max-height: calc(100dvh - var(--space-lg));
+  background: var(--color-paper); border: var(--panel-border) solid var(--color-rule);
+  box-shadow: 8px 8px 0 var(--color-panel-shadow);
+}
+.tabs { display: grid; grid-template-columns: 1fr 1fr; border-bottom: var(--panel-border) solid var(--color-rule); }
+.tabs button {
+  min-height: 52px; border: 0; background: var(--color-paper-2); color: var(--color-ink-2);
+  font-family: var(--font-display); font-size: var(--text-lg); cursor: pointer;
+  transition: background-color var(--dur-micro) ease, color var(--dur-micro) ease;
+}
+.tabs button + button { border-left: var(--panel-border) solid var(--color-rule); }
+.tabs button[aria-selected='true'] { background: var(--color-paper); color: var(--color-ink); box-shadow: inset 0 -5px 0 var(--color-accent); }
+.side__panel { overflow-y: auto; padding: var(--space-sm); overscroll-behavior: contain; }
+.side__panel[hidden] { display: none; }
+
+.picks { display: grid; gap: var(--space-xs); margin: var(--space-xs) 0 0; padding: 0; list-style: none; }
+.pick {
+  display: grid; gap: var(--space-3xs); width: 100%; text-align: left;
+  padding: var(--space-sm) var(--space-md);
+  background: var(--color-paper); color: var(--color-ink);
+  border: 2px solid var(--color-rule); border-radius: var(--radius-card);
+  font: inherit; cursor: pointer;
+  transition: transform var(--dur-micro) var(--ease-out), box-shadow var(--dur-micro) var(--ease-out), background-color var(--dur-micro) ease;
+}
+.pick__name { font-family: var(--font-display); font-size: var(--text-md); line-height: 1.2; }
+.pick__meta { font-size: var(--text-sm); font-weight: 700; color: var(--color-ink-2); }
+.pick__note { font-size: var(--text-sm); color: var(--color-ink-2); }
+.pick[aria-pressed='true'] { background: var(--color-rule); color: var(--color-paper); box-shadow: 4px 4px 0 var(--color-accent); }
+.pick[aria-pressed='true'] .pick__meta, .pick[aria-pressed='true'] .pick__note { color: var(--color-paper-3); }
+[data-theme='dark'] .pick[aria-pressed='true'] { background: var(--color-accent); color: var(--color-accent-ink); box-shadow: 4px 4px 0 var(--color-panel-shadow); }
+[data-theme='dark'] .pick[aria-pressed='true'] .pick__meta, [data-theme='dark'] .pick[aria-pressed='true'] .pick__note { color: var(--color-accent-ink); }
+.pick:active { transform: translate(2px, 2px); }
+@media (hover: hover) and (pointer: fine) {
+  .pick:not([aria-pressed='true']):hover { background: var(--color-paper-2); transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--color-rule); }
+  .tabs button[aria-selected='false']:hover { color: var(--color-ink); }
+}
+
+/* Seal guide, compact for the side panel. */
+.guide__head { display: grid; gap: var(--space-sm); justify-items: start; }
+.guide__lead { font-size: var(--text-sm); color: var(--color-ink-2); }
+.guide__actions { display: flex; flex-wrap: wrap; gap: var(--space-xs); }
+.guide__actions button { min-height: 40px; font-size: var(--text-sm); }
+.guide__grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 6.5rem), 1fr)); gap: var(--space-sm); margin: var(--space-md) 0 0; padding: 0; list-style: none; }
+.seal { display: grid; align-content: start; gap: var(--space-3xs); }
+.seal__picture {
+  aspect-ratio: 1; display: grid; place-items: center; overflow: hidden;
+  border: var(--panel-border) solid var(--color-rule); background: var(--color-paper-2);
+  transition: border-color var(--dur-micro) ease, transform var(--dur-micro) var(--ease-out), box-shadow var(--dur-micro) ease;
+}
+.seal__picture img { width: 100%; height: 100%; object-fit: cover; }
+.seal__picture img[data-pixel] { image-rendering: pixelated; }
+.seal__empty { padding: var(--space-xs); font-size: var(--text-xs); color: var(--color-muted); text-align: center; }
+.seal[data-live] .seal__picture { border-color: var(--color-accent); transform: translateY(-3px); box-shadow: 4px 4px 0 var(--color-accent); }
+.seal__name { margin-top: var(--space-3xs); font-size: var(--text-md); }
+.seal__meta { font-size: var(--text-xs); color: var(--color-ink-2); }
+.seal[data-done] .seal__meta:first-of-type { color: var(--color-success); font-weight: 700; }
+[data-theme='light'] .seal[data-done] .seal__meta:first-of-type, :root:not([data-theme]) .seal[data-done] .seal__meta:first-of-type { color: var(--color-ink); }
+.seal a { font-size: var(--text-xs); }
+
+.foot { max-width: 1600px; margin-inline: auto; padding: var(--space-md) var(--gutter) var(--space-xl); font-size: var(--text-sm); color: var(--color-ink); }
+.foot p { max-width: 75ch; }
+
+/* ── Narrow screens: stage first, the tabs right under it ────────────── */
+@media (max-width: 60rem) {
+  :root { --text-card: 2.5rem; --gutter: 14px; }
+  .workspace { grid-template-columns: minmax(0, 1fr); }
+  .stage, .track, .track__free, .guesses { width: 100%; }
+  .stage { box-shadow: 5px 5px 0 var(--color-panel-shadow); }
+  .side { position: static; max-height: none; }
+  .side__panel { max-height: 70dvh; }
+  .wordmark { font-size: 1.9rem; -webkit-text-stroke-width: 6px; }
+  .hud { padding: var(--space-2xs) var(--space-xs); max-width: 46%; }
+  .hud--held { min-width: 0; }
+  .hud__label { font-size: var(--text-xs); }
+  .hud__seal { font-size: var(--text-md); }
+  .chain__seal { font-size: var(--text-sm); padding: 0 var(--space-xs); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .title-card__name { animation: none; transform: rotate(-4deg); }
+  .chain__seal { animation: none; }
+  .lettering { animation: letter-fade 1.2s linear forwards; }
+  .primary:active:not(:disabled), .quiet:active, .toggle:active, .pick:active, .seal[data-live] .seal__picture { transform: none; }
+}
