@@ -36,8 +36,9 @@ export function useDetector(onReading: (reading: Reading) => void) {
   const listener = useRef(onReading)
   listener.current = onReading
 
-  // Start loading the model as soon as the page opens; it takes a moment.
-  useEffect(() => {
+  // Creates the worker and starts loading the model. Safe to call twice.
+  const boot = useCallback(() => {
+    if (worker.current) return
     const w = new Worker(new URL('./detector.worker.ts', import.meta.url), { type: 'module' })
     worker.current = w
     w.onmessage = (event: MessageEvent<Reply>) => {
@@ -70,8 +71,28 @@ export function useDetector(onReading: (reading: Reading) => void) {
     }
     const modelUrl = new URL('models/yolox_nano.onnx', document.baseURI).href
     w.postMessage({ type: 'load', modelUrl } satisfies Request)
-    return () => w.terminate()
   }, [])
+
+  // The model is 18 MB, so it starts loading once the page has painted and
+  // gone idle, not in the middle of the first paint. Pressing start before
+  // then boots it straight away.
+  useEffect(() => {
+    let idle = 0
+    let timer = 0
+    const schedule = () => {
+      if (typeof requestIdleCallback === 'function') idle = requestIdleCallback(boot, { timeout: 3000 })
+      else timer = window.setTimeout(boot, 1000)
+    }
+    if (document.readyState === 'complete') schedule()
+    else window.addEventListener('load', schedule, { once: true })
+    return () => {
+      window.removeEventListener('load', schedule)
+      if (idle) cancelIdleCallback(idle)
+      clearTimeout(timer)
+      worker.current?.terminate()
+      worker.current = null
+    }
+  }, [boot])
 
   const loop = useCallback(async () => {
     if (!running.current) return
@@ -93,6 +114,7 @@ export function useDetector(onReading: (reading: Reading) => void) {
       setStatus('unsupported')
       return
     }
+    boot()
     setStatus('starting')
     try {
       const s = await navigator.mediaDevices.getUserMedia({
@@ -111,7 +133,7 @@ export function useDetector(onReading: (reading: Reading) => void) {
       setStatus(denied ? 'denied' : 'failed')
       setError(e instanceof Error ? e.message : String(e))
     }
-  }, [loop])
+  }, [boot, loop])
 
   const stop = useCallback(() => {
     running.current = false
