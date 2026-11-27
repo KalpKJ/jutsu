@@ -5,9 +5,12 @@
 /* Hallmark · pre-emit critique: P4 H5 E5 S4 R4 V5 · weakest: S, the side panel is lists; set them as pressed manga panels with one clear selected state */
 /* Hallmark · waive 28b · the only video is the live camera feed in Stage.tsx · a live camera has no still frame to show before it starts */
 /* Hallmark · answered F4 · there is one filled primary, the start button; the rest are toggles and outlined buttons */
-@import url("@fontsource/dela-gothic-one/400.css");
-@import url("@fontsource/zen-kaku-gothic-new/400.css");
-@import url("@fontsource/zen-kaku-gothic-new/700.css");
+@import url("@fontsource/dela-gothic-one/latin-400.css");
+@import url("@fontsource/dela-gothic-one/latin-ext-400.css");
+@import url("@fontsource/zen-kaku-gothic-new/latin-400.css");
+@import url("@fontsource/zen-kaku-gothic-new/latin-ext-400.css");
+@import url("@fontsource/zen-kaku-gothic-new/latin-700.css");
+@import url("@fontsource/zen-kaku-gothic-new/latin-ext-700.css");
 @import url("./tokens.css");
 @import url("./base.css");
 

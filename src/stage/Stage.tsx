@@ -157,16 +157,21 @@ const Stage = forwardRef<StageHandle, Props>(function Stage({ video, running, so
     return () => observer.disconnect()
   }, [])
 
+  // The WebGL panel is built when the camera starts, not with the page: there
+  // is nothing to draw before then, and compiling the shader costs a moment.
   useEffect(() => {
-    if (!gl.current) return
+    if (!running || !gl.current) return
     try {
       renderer.current = createMangaRenderer(gl.current, token('--manga-paper'), token('--manga-ink'))
     } catch {
       renderer.current = null
     }
     if (!renderer.current) setWebgl(false)
-    return () => renderer.current?.dispose()
-  }, [theme])
+    return () => {
+      renderer.current?.dispose()
+      renderer.current = null
+    }
+  }, [theme, running])
 
   useEffect(() => {
     let frame = 0
